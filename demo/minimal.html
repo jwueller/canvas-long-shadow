@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CanvasLongShadow Minimal Demo</title>
+    </head>
+    <body>
+        <canvas id="canvas" width="500" height="500"></canvas>
+
+        <script src="../canvas-long-shadow.js"></script>
+        <script>
+            (function () {
+                var canvas = document.getElementById('canvas');
+
+                var ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#195A72';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Render the shadow cast by drawShape().
+                var shadowRenderer = new CanvasLongShadow.Renderer({
+                    width: canvas.width,
+                    height: canvas.height
+                });
+
+                shadowRenderer.draw(ctx, {
+                    shapeRenderer: drawShape
+                });
+
+                // Render the actual shape.
+                drawShape(ctx);
+
+                function drawShape(ctx) {
+                    ctx.translate(canvas.width / 2, canvas.width / 2);
+                    ctx.rotate(0.15);
+                    ctx.fillStyle = '#33B5E5';
+                    ctx.fillRect(-100, -100, 200, 200);
+                }
+            }());
+        </script>
+    </body>
+</html>
