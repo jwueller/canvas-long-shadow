@@ -13,7 +13,7 @@
 
                 var shapeShadowRenderer = new CanvasLongShadow.Renderer({
                     width: canvas.width,
-                    height: canvas.height
+                    height: canvas.height,
                 });
 
                 var iconShadowRenderer = new CanvasLongShadow.Renderer({
@@ -22,18 +22,18 @@
                 });
 
                 var patternImage = createPatternImage();
+                var centerX = canvas.width / 2;
+                var centerY = canvas.height / 2;
+                var rotateAroundCenterTransform = CanvasLongShadow.createRotateAroundPointTransform(centerX, centerY);
+
+                console.time('draw');
 
                 var ctx = canvas.getContext('2d');
                 ctx.fillStyle = '#195A72';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 shapeShadowRenderer.draw(ctx, {
-                    fillOriginX: canvas.width / 2,
-                    fillOriginY: canvas.width / 2,
-                    fillRotationDeg: -45,
-
                     angleDeg: 45,
-
                     shapeRenderer: drawShape,
 
                     fillStyle: function (fillStyleCtx) {
@@ -42,11 +42,7 @@
                 });
 
                 shapeShadowRenderer.draw(ctx, {
-                    fillOriginX: canvas.width / 2,
-                    fillOriginY: canvas.width / 2,
-
                     angleDeg: 160,
-
                     shapeRenderer: drawShape,
 
                     fillStyle: function (ctx) {
@@ -54,7 +50,9 @@
                         gradient.addColorStop(0, 'rgba(0, 0, 0, 0.1)');
                         gradient.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
                         return gradient;
-                    }
+                    },
+
+                    fillTransform: rotateAroundCenterTransform
                 });
 
                 ctx.fillStyle = '#33B5E5';
@@ -70,10 +68,10 @@
                 ctx.clip();
 
                 iconShadowRenderer.draw(ctx, {
+                    angleDeg: 45,
+
                     fillOriginX: 150,
                     fillOriginY: 150,
-
-                    angleDeg: 45,
 
                     shapeRenderer: function (ctx) {
                         ctx.translate(150, 150);
@@ -89,10 +87,10 @@
                 });
 
                 iconShadowRenderer.draw(ctx, {
+                    angleDeg: 160,
+
                     fillOriginX: 150,
                     fillOriginY: 150,
-
-                    angleDeg: 160,
 
                     shapeRenderer: function (ctx) {
                         ctx.translate(150, 150);
@@ -109,6 +107,8 @@
 
                 ctx.restore();
                 drawIcon(ctx);
+
+                console.timeEnd('draw');
 
                 function drawShape(ctx) {
                     fillRoundedRect(ctx, 100, 100, 300, 300, 20);
