@@ -1,8 +1,8 @@
 window.CanvasLongShadow = (function () {
     'use strict';
 
+    // Older JavaScript engines may not have this. Degrade gracefully.
     var freeze = Object.freeze || function(obj) {
-        // Older JavaScript engines may not have this. Degrade gracefully.
         return obj;
     };
 
@@ -53,12 +53,6 @@ window.CanvasLongShadow = (function () {
         var rasterizedShapeCtx = createOffScreenRenderContext(maskRenderWidth, maskRenderHeight);
         var shadowMaskCtx = createOffScreenRenderContext(maskRenderWidth, maskRenderHeight);
         var shadowCtx = createOffScreenRenderContext(renderWidth, renderHeight);
-
-/*
-        document.body.appendChild(rasterizedShapeCtx.canvas);
-        document.body.appendChild(shadowMaskCtx.canvas);
-        document.body.appendChild(shadowCtx.canvas);
-*/
 
         //
         // METHODS
