@@ -8,33 +8,37 @@
 
         <script src="../canvas-long-shadow.js"></script>
         <script>
-            (function () {
-                var canvas = document.getElementById('canvas');
+            //
+            // This is the smallest example that makes sense.
+            //
 
-                var ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#195A72';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
 
-                // Render the shadow cast by drawShape().
-                var shadowRenderer = new CanvasLongShadow.Renderer({
-                    width: canvas.width,
-                    height: canvas.height
-                });
+            // Draw the background.
+            ctx.fillStyle = '#195A72';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                shadowRenderer.draw(ctx, {
-                    shapeRenderer: drawShape
-                });
+            ctx.translate(canvas.width / 2, canvas.width / 2); // center everything
 
-                // Render the actual shape.
-                drawShape(ctx);
+            // Render the default shadow cast by drawShape().
+            var shadowRenderer = new CanvasLongShadow.Renderer({
+                width: canvas.width,
+                height: canvas.height
+            });
 
-                function drawShape(ctx) {
-                    ctx.translate(canvas.width / 2, canvas.width / 2);
-                    ctx.rotate(0.15);
-                    ctx.fillStyle = '#33B5E5';
-                    ctx.fillRect(-100, -100, 200, 200);
-                }
-            }());
+            shadowRenderer.render(ctx, {
+                shapeRenderer: drawShape
+            });
+
+            // Render the actual shape on top of the shadow.
+            ctx.fillStyle = '#33B5E5';
+            drawShape(ctx); // comment this out to see only the shadow
+
+            function drawShape(ctx) {
+                ctx.rotate(0.15);
+                ctx.fillRect(-100, -100, 200, 200);
+            }
         </script>
     </body>
 </html>

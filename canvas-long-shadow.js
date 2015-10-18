@@ -1,16 +1,27 @@
 window.CanvasLongShadow = (function () {
-    function extractAngleOptionRad(options, name) {
-        var radName = name + 'Rad';
-        if (typeof options[radName] !== 'undefined') {
-            return options[radName];
-        }
+    'use strict';
 
-        var degName = name + 'Deg';
-        if (typeof options[degName] !== 'undefined') {
-            return (Math.PI / 180) * options[degName];
-        }
+    var freeze = Object.freeze || function(obj) {
+        // Older JavaScript engines may not have this. Degrade gracefully.
+        return obj;
+    };
 
-        return null;
+    function renderDefaultFill(fillCtx, angleRad) {
+        fillCtx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+        fillCtx.fill();
+    }
+
+    function getNumber(value, defaultValue) {
+        if (typeof value === 'number') return value;
+        if (value === null || typeof value === 'undefined') return defaultValue;
+        throw 'number expected';
+    }
+
+    function createOffScreenRenderContext(width, height) {
+        var canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        return canvas.getContext('2d');
     }
 
     function Renderer(rendererOptions) {
@@ -21,37 +32,33 @@ window.CanvasLongShadow = (function () {
         // The dimensions are required and should not change during the lifetime
         // of a renderer to ensure that canvases can be cached in order to
         // reduce memory allocations.
-        var renderWidth = rendererOptions.width|0;
-        var renderHeight = rendererOptions.height|0;
-        if (renderWidth <= 0 || renderHeight <= 0) throw "invalid dimensions";
+        var renderWidth = this.width = getNumber(rendererOptions.width, null);
+        var renderHeight = this.height = getNumber(rendererOptions.height, null);
+        if (renderWidth === null || renderHeight === null) throw 'missing dimensions';
+        if (renderWidth < 1 || renderHeight < 1) throw 'invalid dimensions';
 
         // The mask may be rendered at a lower resolution to improve
         // performance.
-        var maskRenderScale = rendererOptions.edgeQuality || 1;
-        if (typeof maskRenderScale !== 'number') throw "edge quality is not a number";
-        if (maskRenderScale <= 0) throw "the edge quality must be > 0";
-        if (maskRenderScale > 1) throw "an edge quality > 1 is a waste of computing power";
+        var maskRenderScale = this.quality = getNumber(rendererOptions.quality, 1);
+        if (maskRenderScale <= 0) throw 'shadow quality must be > 0';
+        // TODO: Are there valid use-cases for super-sampling with this?
+        if (maskRenderScale > 1) throw 'shadow quality > 1 is a waste of computing power';
+        var maskRenderWidth = Math.max(1, renderWidth * maskRenderScale);
+        var maskRenderHeight = Math.max(1, renderHeight * maskRenderScale);
 
         //
         // CACHE
         //
 
-        var shadowCanvas = document.createElement('canvas');
-        shadowCanvas.width = renderWidth;
-        shadowCanvas.height = renderHeight;
-        var shadowCtx = shadowCanvas.getContext('2d');
+        var rasterizedShapeCtx = createOffScreenRenderContext(maskRenderWidth, maskRenderHeight);
+        var shadowMaskCtx = createOffScreenRenderContext(maskRenderWidth, maskRenderHeight);
+        var shadowCtx = createOffScreenRenderContext(renderWidth, renderHeight);
 
-        var maskCanvas = document.createElement('canvas');
-        maskCanvas.width = (renderWidth * maskRenderScale)|0;
-        maskCanvas.height = (renderHeight * maskRenderScale)|0;
-        var maskCtx = maskCanvas.getContext('2d');
-
-        var maskShapeCanvas = document.createElement('canvas');
-        maskShapeCanvas.width = maskCanvas.width;
-        maskShapeCanvas.height = maskCanvas.height;
-        var maskShapeCtx = maskShapeCanvas.getContext('2d');
-
-        var transformFillDefault = createRotateAroundPointTransform(renderWidth / 2, renderHeight / 2);
+/*
+        document.body.appendChild(rasterizedShapeCtx.canvas);
+        document.body.appendChild(shadowMaskCtx.canvas);
+        document.body.appendChild(shadowCtx.canvas);
+*/
 
         //
         // METHODS
@@ -63,184 +70,118 @@ window.CanvasLongShadow = (function () {
             //
 
             // The shape renderer is required.
-            var fillShape = options.shapeRenderer || null;
-            if (fillShape === null) throw "missing shape renderer";
+            var transformAndFillShape = options.shapeRenderer || null;
+            if (transformAndFillShape === null) throw 'missing shape renderer';
 
             // We default to the most frequently used shadow angle.
-            var angleRad = extractAngleOptionRad(options, 'angle') || Math.PI / 4; // 45 degrees
+            var angleRad = getNumber(options.angleRad, (Math.PI / 180) * getNumber(options.angleDeg, 45));
 
             // Depth defaults to the worst case, which is that the shadow needs
             // to cross the whole canvas at the most unfortunate angle (i.e. the
             // exact diagonal). This does not cover shapes that are actually
             // bigger than the canvas, but those cases cannot be handled
-            // automatically in a reasonable manner.
-            var depth = options.depth || Math.sqrt(renderWidth * renderWidth + renderHeight * renderHeight);
+            // automatically in a reasonable manner, anyway.
+            var depth = getNumber(options.depth, Math.sqrt(renderWidth * renderWidth + renderHeight * renderHeight));
+
+            // Setting the origin allows specifying how the render dimensions
+            // expand. Not only is the shape rendered by the offset, but the
+            // resulting shadow image is drawn by the inverted offset, making
+            // it easy for the user to position the shape shadow in his final
+            // image.
+            var originX = getNumber(options.originX, renderWidth / 2);
+            var originY = getNumber(options.originY, renderHeight / 2);
 
             // We default to a simple flat shadow.
-            var fillStyle = options.fillStyle || 'rgba(0, 0, 0, 0.2)';
-
-            // The fill may be transformed freely. By default, the fill follows
-            // the shadow rotation.
-            var applyFillTransform = options.fillTransform || transformFillDefault;
-            if (typeof applyFillTransform !== 'function') throw "fill transform is not a function";
-
-            var fillShadow = options.fillRenderer || function (fillCtx) {
-                fillCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-                fillCtx.fillRect(0, 0, fillCtx.canvas.width, fillCtx.canvas.height);
-            };
+            var transformAndFillShadow = options.fillRenderer || renderDefaultFill;
 
             //
             // RENDERING
             //
 
-            // Rasterize the mask shape.
-            renderShapeMask(maskShapeCtx, function (ctx) {
-                ctx.scale(maskRenderScale, maskRenderScale);
-                fillShape(ctx);
+            rasterizeShape(rasterizedShapeCtx, function (innerCtx) {
+                innerCtx.scale(maskRenderScale, maskRenderScale);
+                innerCtx.translate(originX, originY);
+                transformAndFillShape(innerCtx);
             });
 
-            // Cast the shadow as a mask.
-            renderMask(maskCtx, maskShapeCanvas, angleRad, depth * maskRenderScale);
+            // "Stretch" the rasterized shape into a shadow mask.
+            renderShadowMask(shadowMaskCtx, rasterizedShapeCtx.canvas, angleRad, depth * maskRenderScale);
 
             // Compose the shadow out of mask and fill style.
-            renderShadow(shadowCtx, maskCanvas, fillStyle, function (ctx) {
-                applyFillTransform(ctx, angleRad);
+            renderShadow(shadowCtx, shadowMaskCtx.canvas, function (innerCtx) {
+                innerCtx.translate(originX, originY);
+                transformAndFillShadow(innerCtx, angleRad);
             });
 
             // Blit the shadow onto the actual target.
-            ctx.drawImage(shadowCanvas, 0, 0);
+            ctx.drawImage(shadowCtx.canvas, -originX, -originY);
         }
 
-        function getDimensions() {
-            return {
-                width: renderWidth,
-                height: renderHeight
-            };
+        function renderIntoImage(options) {
+            var ctx = createOffScreenRenderContext(renderWidth, renderHeight);
+            renderIntoContext(ctx, options);
+            return ctx.canvas;
         }
 
         // expose methods
-        this.draw = renderIntoContext;
-        this.getDimensions = getDimensions;
+        this.render = renderIntoContext;
+        this.renderImage = renderIntoImage;
+
+        freeze(this);
     }
 
-    function renderShapeMask(ctx, fillShape) {
+    function rasterizeShape(ctx, transformAndFillShape) {
         ctx.save();
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.globalAlpha = 1.0;
         ctx.fillStyle = '#000';
-        fillShape(ctx);
+        transformAndFillShape(ctx);
         ctx.restore();
     }
 
-    function renderMask(ctx, shapeMask, angleRad, depth) {
+    function renderShadowMask(ctx, rasterizedShape, angleRad, depth) {
         ctx.save();
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        // Render the shape mask iterations.
+        // Render the shape mask iterations (this is the slow bit).
         ctx.globalCompositeOperation = 'source-over';
 
         var strideX = Math.cos(angleRad);
         var strideY = Math.sin(angleRad);
         var iteration;
 
-        for (iteration = 0; iteration < depth; ++iteration) {
-            ctx.drawImage(shapeMask, strideX * iteration, strideY * iteration);
+        for (iteration = 1; iteration < depth; ++iteration) {
+            ctx.drawImage(rasterizedShape, iteration * strideX, iteration * strideY);
         }
 
         // Clear the original shape (important for transparent shapes).
+        // TODO: Make this step optional. Not everyone will need it.
         ctx.globalCompositeOperation = 'destination-out';
-        ctx.drawImage(shapeMask, 0, 0);
+        ctx.drawImage(rasterizedShape, 0, 0);
+
         ctx.restore();
     }
 
-    function renderShadow(ctx, mask, fillStyle, applyFillTransform) {
-        // Evaluate the fill style, if necessary.
-        if (typeof fillStyle === 'function') {
-            ctx.save();
-            fillStyle = fillStyle(ctx);
-            ctx.restore();
-        }
+    function renderShadow(ctx, mask, transformAndFillShadow) {
+        var w = ctx.canvas.width;
+        var h = ctx.canvas.height;
 
         // Render the shadow fill.
         ctx.save();
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.clearRect(0, 0, w, h);
         ctx.beginPath();
-        ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        applyFillTransform(ctx);
-        ctx.fillStyle = fillStyle;
-        ctx.fill();
+        ctx.rect(0, 0, w, h);
+        transformAndFillShadow(ctx);
         ctx.restore();
 
         // Apply the mask.
         ctx.save();
-        ctx.globalCompositeOperation = 'destination-in';
-        ctx.drawImage(mask, 0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.globalCompositeOperation = 'destination-in'; // TODO: Apparently, this has compatibility issues. Is there a nice, more portable way that isn't significantly slower?
+        ctx.drawImage(mask, 0, 0, w, h);
         ctx.restore();
     }
 
-    // function renderShadow(ctx, mask, fillStyle, fillOriginX, fillOriginY, transformFill) {
-    //     ctx.save();
-    //     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    //     ctx.drawImage(mask, 0, 0, ctx.canvas.width, ctx.canvas.height);
-    //     ctx.restore();
-
-    //     fillShadow(ctx, fillStyle, fillOriginX, fillOriginY, transformFill);
-    // }
-
-    // function fillShadow(ctx, fillStyle, fillOriginX, fillOriginY, transformFill) {
-    //     // Evaluate the fill style, if necessary.
-    //     if (typeof fillStyle === 'function') {
-    //         ctx.save();
-    //         fillStyle = fillStyle(ctx);
-    //         ctx.restore();
-    //     }
-
-    //     // Draw the fill style, clipped by the mask that exists on the canvas.
-    //     ctx.save();
-    //     ctx.globalCompositeOperation = 'source-in';
-    //     ctx.beginPath();
-    //     ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    //     ctx.translate(fillOriginX, fillOriginY);
-
-    //     if (typeof transformFill === 'function') {
-    //         transformFill(ctx);
-    //     }
-
-    //     ctx.fillStyle = fillStyle;
-    //     ctx.fill();
-    //     ctx.restore();
-    // }
-
-    function renderImage(options) {
-        var renderer = new Renderer(options);
-        var dimensions = renderer.getDimensions();
-        var canvas = document.createElement('canvas');
-        canvas.width = dimensions.width;
-        canvas.height = dimensions.height;
-        var ctx = canvas.getContext('2d');
-        renderer.draw(ctx, options);
-        return canvas;
-    }
-
-    function createIdentityTransform() {
-        return function () {};
-    }
-
-    function createRotateAroundPointTransform(centerX, centerY) {
-        return function (ctx, angleRad) {
-            ctx.translate(centerX, centerY);
-            ctx.rotate(angleRad);
-        };
-    }
-
-    return {
-        // objects
-        Renderer: Renderer,
-
-        // functions
-        createIdentityTransform: createIdentityTransform,
-        createRotateAroundPointTransform: createRotateAroundPointTransform,
-
-        renderImage: renderImage
-    };
+    return freeze({
+        Renderer: Renderer
+    });
 }());
