@@ -8,7 +8,8 @@ This is a library capable of rendering long shadows, often used in flat design, 
 
 ## Browser
 
-> TODO
+* download [the latest release ZIP](/jwueller/canvas-long-shadow/releases)
+* include `canvas-long-shadow.js` (debug build) or `canvas-long-shadow.min.js` (production build) in your website
 
 ## Node.js
 
