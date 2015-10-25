@@ -64,7 +64,7 @@ gulp.task('build', ['clean', 'browser-dev', 'browser-prod'], function () {
 //
 
 gulp.task('clean-gh-pages', function () {
-    return del(['dist/gh-pages']);
+    return del(['dist/gh-pages/']);
 });
 
 gulp.task('gh-pages', ['clean-gh-pages', 'browser-prod'], function () {
@@ -82,4 +82,4 @@ gulp.task('gh-pages', ['clean-gh-pages', 'browser-prod'], function () {
 gulp.task('build-all', ['build', 'gh-pages']);
 gulp.task('clean-all', ['clean', 'clean-gh-pages']);
 
-gulp.task('default', ['clean-all', 'build-all']);
+gulp.task('default', ['build-all']);

@@ -1,4 +1,4 @@
-demo/
+demo-src/
 dist/
 .gitignore
 gulpfile.js

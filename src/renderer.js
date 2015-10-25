@@ -173,9 +173,9 @@ function Renderer(renderWidth, renderHeight, rendererOptions) {
 
     this['render'] = renderIntoContext;
 
-    this['getWidth'] = function () { return renderWidth; };
-    this['getHeight'] = function () { return renderHeight; };
-    this['getQuality'] = function () { return maskRenderScale; };
+    this['width'] = renderWidth;
+    this['height'] = renderHeight;
+    this['quality'] = maskRenderScale;
 }
 
 function rasterizeShape(ctx, transformAndFillShape) {

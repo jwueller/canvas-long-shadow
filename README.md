@@ -2,7 +2,7 @@
 
 This is a library capable of rendering long shadows, often used in flat design, using a HTML5 Canvas. It runs in modern browsers and Node.js.
 
-![Reference Image](demo/fancy-reference.png)
+![Reference Image](demo-src/fancy-reference.png)
 
 # Installation
 
@@ -57,11 +57,11 @@ Renders a shadow using the provided context.
 
 _Note: The shadow can only be rendered properly if the shape stays inside the specified boundaries._
 
-## `Renderer#getWidth()`
+## `Renderer` Properties
 
-## `Renderer#getHeight()`
-
-## `Renderer#getQuality()`
+* `width` {Number}
+* `height` {Number}
+* `quality` {Number}
 
 # How to Build
 
@@ -74,4 +74,4 @@ _Note: The shadow can only be rendered properly if the shape stays inside the sp
 
 1. clone the sources
 2. `npm install` to pull the development dependencies
-3. `gulp` (debug build) or `gulp --production` (production build)
+3. `gulp build` to build and package the distribution (excludes `gh-pages`)
