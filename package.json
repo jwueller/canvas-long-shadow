@@ -18,7 +18,7 @@
   "scripts": {
     "preversion": "gulp clean",
     "postversion": "gulp && gulp --production",
-    "publish-pages": "git subtree push --prefix demo origin gh-pages",
+    "publish-pages": "git subtree push --prefix demo origin gh-pages"
   },
 
   "dependencies": {
