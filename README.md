@@ -65,4 +65,13 @@ _Note: The shadow can only be rendered properly if the shape stays inside the sp
 
 # How to Build
 
+## Prerequisites
 
+* Node.js with `npm`
+* gulp.js
+
+## Build Steps
+
+1. clone the sources
+2. `npm install` to pull the development dependencies
+3. `gulp` (debug build) or `gulp --production` (production build)
