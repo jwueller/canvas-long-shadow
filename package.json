@@ -2,29 +2,23 @@
   "name": "canvas-long-shadow",
   "description": "HTML5 Canvas parallel long shadow renderer",
   "author": "Johannes Wüller <johanneswueller@gmail.com>",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "private": true,
-
   "homepage": "https://github.com/jwueller/canvas-long-shadow",
-
   "repository": {
     "type": "git",
     "url": "https://github.com/jwueller/canvas-long-shadow.git"
   },
-
   "main": "index.js",
-
   "scripts": {
     "preversion": "gulp clean",
     "postversion": "gulp && gulp --production",
     "publish-pages": "git subtree push --prefix demo origin gh-pages"
   },
-
   "dependencies": {
     "canvas-browserify": "^1.1.3"
   },
-
   "devDependencies": {
     "browserify": "^11.2.0",
     "del": "^2.0.2",
