@@ -1,0 +1,12 @@
+body {
+    font-family: sans-serif;
+    margin: 10px;
+}
+
+canvas, img {
+    display: block;
+}
+
+p, dd {
+    max-width: 500px;
+}

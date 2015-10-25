@@ -1,24 +1,26 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>CanvasLongShadow Fancy Demo</title>
+        <title>canvas-long-shadow Fancy Demo</title>
+        <meta name="viewport" content="width=520"/>
+        <link href="demo.css" rel="stylesheet"/>
     </head>
     <body>
+        <h1>Fancy Demo <small>[<a href="https://github.com/jwueller/canvas-long-shadow">GitHub</a>]</small></h1>
         <canvas id="canvas" width="500" height="500"></canvas>
+        <p><em>Note: This demo is not necessarily fully compatible with all supported browsers in order to keep the source concise.</em></p>
+        <h2>Reference Image</h2>
+        <img src="fancy-reference.png" alt="Reference Image"/>
 
-        <script src="../canvas-long-shadow.js"></script>
+        <script src="../dist/canvas-long-shadow.js"></script>
         <script>
             var canvas = document.getElementById('canvas');
 
-            var shapeShadowRenderer = new CanvasLongShadow.Renderer({
-                width: canvas.width,
-                height: canvas.height
-            });
+            var symbolBackgroundSize = 300;
+            var symbolSize = 200;
 
-            var iconShadowRenderer = new CanvasLongShadow.Renderer({
-                width: 300,
-                height: 300
-            });
+            var shapeShadowRenderer = new CanvasLongShadow.Renderer(canvas.width, canvas.height);
+            var iconShadowRenderer = new CanvasLongShadow.Renderer(symbolBackgroundSize, symbolBackgroundSize);
 
             var patternImage = createPatternImage();
 
@@ -33,17 +35,17 @@
                 angleDeg: 45,
                 shapeRenderer: drawSymbolBackground,
 
-                fillRenderer: function (fillCtx, angleRad) {
+                fillStyle: function (fillCtx, angleRad) {
                     fillCtx.fillStyle = fillCtx.createPattern(patternImage, 'repeat');
                     fillCtx.rotate(1.25);
-                    fillCtx.fill();
                 }
             });
 
-            // SHADOW: default
+            // SHADOW: flat
             shapeShadowRenderer.render(ctx, {
                 angleDeg: 160,
-                shapeRenderer: drawSymbolBackground
+                shapeRenderer: drawSymbolBackground,
+                fillStyle: 'rgba(0, 0, 0, 0.15)'
             });
 
             // SHADOW: native
@@ -60,13 +62,12 @@
                 angleDeg: 45,
                 shapeRenderer: drawSymbol,
 
-                fillRenderer: function (fillCtx, angleRad) {
+                fillStyle: function (fillCtx, angleRad) {
                     var gradient = fillCtx.createLinearGradient(50, 0, 150, 0);
                     gradient.addColorStop(0, 'rgba(0, 0, 0, 0.2)');
                     gradient.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
                     fillCtx.fillStyle = gradient;
                     fillCtx.rotate(angleRad);
-                    fillCtx.fill();
                 }
             });
 
@@ -75,13 +76,12 @@
                 angleDeg: 160,
                 shapeRenderer: drawSymbol,
 
-                fillRenderer: function (fillCtx, angleRad) {
+                fillStyle: function (fillCtx, angleRad) {
                     var gradient = fillCtx.createLinearGradient(50, 0, 150, 0);
                     gradient.addColorStop(0, 'rgba(0, 0, 0, 0.1)');
                     gradient.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
                     fillCtx.fillStyle = gradient;
                     fillCtx.rotate(angleRad);
-                    fillCtx.fill();
                 }
             });
 
@@ -111,11 +111,11 @@
             }
 
             function drawSymbolBackground(ctx) {
-                fillRoundedRect(ctx, -150, -150, 300, 300, 20);
+                fillRoundedRect(ctx, -symbolBackgroundSize / 2, -symbolBackgroundSize / 2, symbolBackgroundSize, symbolBackgroundSize, 20);
             }
 
             function drawSymbol(ctx) {
-                fillBiohazardSymbol(ctx, 200);
+                fillBiohazardSymbol(ctx, symbolSize);
             }
 
             function fillRoundedRect(ctx, left, top, width, height, radius) {

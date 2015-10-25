@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>canvas-long-shadow Interactive Real-Time Demo</title>
+        <meta name="viewport" content="width=520"/>
+        <link href="demo.css" rel="stylesheet"/>
+    </head>
+    <body>
+        <h1>Interactive Demo <small>[<a href="https://github.com/jwueller/canvas-long-shadow">GitHub</a>]</small></h1>
+        <p>This demo utilizes a reduced shadow quality to achieve (near) real-time performance, while rendering the shadow dynamically. In a real-world scenario, you would probably want to cache most shadows by rendering into an off-screen canvas.</p>
+        <p><strong>Point somewhere to move the object.</strong></p>
+        <canvas id="canvas" width="500" height="500"></canvas>
+        <p><em>Note: This demo is not necessarily fully compatible with all supported browsers in order to keep the source concise.</em></p>
+
+        <script src="../dist/canvas-long-shadow.js"></script>
+        <script>
+            //
+            // Canvas rendering is not yet sufficiently optimized to do
+            // real-world real-time rendering of long shadows, but we are
+            // slowly getting there.
+            //
+            // This demo works rather smoothly in modern browsers.
+            //
+
+            function WorldObject(size, initialRotationSpeedDeg, initialPositionX, initialPositionY) {
+                this.size = size;
+                this.rotationSpeedDeg = this.targetRotationSpeedDeg = initialRotationSpeedDeg;
+                this.angleRad = 0;
+                this.positionX = this.targetPositionX = initialPositionX;
+                this.positionY = this.targetPositionY = initialPositionY;
+            }
+
+            WorldObject.prototype.update = function () {
+                this.rotationSpeedDeg += (this.targetRotationSpeedDeg - this.rotationSpeedDeg) * 0.02;
+                this.angleRad += this.rotationSpeedDeg;
+
+                this.positionX += (this.targetPositionX - this.positionX) * 0.1;
+                this.positionY += (this.targetPositionY - this.positionY) * 0.1;
+            };
+
+            WorldObject.prototype.render = function (ctx) {
+                ctx.translate(this.positionX, this.positionY);
+                ctx.rotate(this.angleRad);
+                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+            };
+
+            var canvas = document.getElementById('canvas');
+
+            var idleRotationSpeedDeg = -Math.PI / 128;
+            var activeRotationSpeedDeg = -Math.PI / 32;
+
+            var worldObject = new WorldObject(100, idleRotationSpeedDeg, canvas.width / 2, canvas.height / 2);
+
+            ['mousemove', 'click'].forEach(function (eventName) {
+                canvas.addEventListener(eventName, function (event) {
+                    worldObject.targetRotationSpeedDeg = activeRotationSpeedDeg;
+                    var viewportBounds = canvas.getBoundingClientRect();
+                    worldObject.targetPositionX = event.pageX - viewportBounds.left - window.scrollX;
+                    worldObject.targetPositionY = event.pageY - viewportBounds.top - window.scrollY;
+                });
+            });
+
+            canvas.addEventListener('mouseleave', function (event) {
+                worldObject.targetRotationSpeedDeg = idleRotationSpeedDeg;
+                worldObject.targetPositionX = canvas.width / 2;
+                worldObject.targetPositionY = canvas.height / 2;
+            });
+
+            var shadowRenderer = new CanvasLongShadow.Renderer(canvas.width + worldObject.size, canvas.height + worldObject.size, {
+                // Reducing the shadow quality for the sake of performance
+                // can be very useful in real-time scenarios.
+                quality: 0.2
+            });
+
+            var ctx = canvas.getContext('2d');
+            var patternImage = createPatternImage();
+
+            window.requestAnimationFrame(function scheduleFrame () {
+                worldObject.update();
+
+                ctx.save();
+
+                ctx.fillStyle = '#195A72';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                shadowRenderer.render(ctx, {
+                    // Notice that angles can be specified using "angleDeg" and
+                    // "angleRad". If both are set, "angleRad" takes precedence.
+                    angleRad: (new Date().getTime() / 1700) % (Math.PI * 2),
+
+                    offsetX: canvas.width / 2,
+                    offsetY: canvas.height / 2,
+
+                    shapeRenderer: function (ctx) {
+                        worldObject.render(ctx);
+                    },
+
+                    fillStyle: function (fillCtx, angleRad) {
+                        fillCtx.fillStyle = fillCtx.createPattern(patternImage, 'repeat');
+                        fillCtx.rotate(0.5);
+                    }
+                });
+
+                // Render the actual shape on top of the shadow.
+                ctx.fillStyle = '#33B5E5';
+                worldObject.render(ctx); // comment this out to see only the shadow
+
+                ctx.restore();
+
+                window.requestAnimationFrame(scheduleFrame);
+            });
+
+            //
+            // misc functions
+            //
+
+            function createPatternImage() {
+                var canvas = document.createElement('canvas');
+                canvas.width = 4;
+                canvas.height = 4;
+
+                var ctx = canvas.getContext('2d');
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'square';
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.beginPath();
+                ctx.moveTo(2, 0);
+                ctx.lineTo(2, 6);
+                ctx.stroke();
+
+                return canvas;
+            }
+        </script>
+    </body>
+</html>

@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>CanvasLongShadow Minimal Demo</title>
+        <title>canvas-long-shadow Minimal Demo</title>
+        <meta name="viewport" content="width=520"/>
+        <link href="demo.css" rel="stylesheet"/>
     </head>
     <body>
+        <h1>Minimal Demo <small>[<a href="https://github.com/jwueller/canvas-long-shadow">GitHub</a>]</small></h1>
         <canvas id="canvas" width="500" height="500"></canvas>
+        <p><em>Note: This demo is not necessarily fully compatible with all supported browsers in order to keep the source concise.</em></p>
+        <h2>Reference Image</h2>
+        <img src="minimal-reference.png" alt="Reference Image"/>
 
-        <script src="../canvas-long-shadow.js"></script>
+        <script src="../dist/canvas-long-shadow.js"></script>
         <script>
             //
             // This is the smallest example that makes sense.
@@ -22,14 +28,8 @@
             ctx.translate(canvas.width / 2, canvas.width / 2); // center everything
 
             // Render the default shadow cast by drawShape().
-            var shadowRenderer = new CanvasLongShadow.Renderer({
-                width: canvas.width,
-                height: canvas.height
-            });
-
-            shadowRenderer.render(ctx, {
-                shapeRenderer: drawShape
-            });
+            var shadowRenderer = new CanvasLongShadow.Renderer(canvas.width, canvas.height);
+            shadowRenderer.render(ctx, drawShape);
 
             // Render the actual shape on top of the shadow.
             ctx.fillStyle = '#33B5E5';
