@@ -57,11 +57,6 @@ Renders a shadow using the provided context.
 
 _Note: The shadow can only be rendered properly if the shape stays inside the specified boundaries._
 
-## `Renderer#renderImage(options)`
-
-* `options` {Object | Function}
-  Identical to the `options` argument available for `render(ctx, options)`.
-
 ## `Renderer#getWidth()`
 
 ## `Renderer#getHeight()`
