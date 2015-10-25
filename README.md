@@ -2,6 +2,8 @@
 
 This is a library capable of rendering long shadows, often used in flat design, using a HTML5 Canvas. It runs in modern browsers and Node.js.
 
+**[Live Demos](http://jwueller.github.io/canvas-long-shadow/)**
+
 ![Reference Image](demo-src/fancy-reference.png)
 
 # Installation
