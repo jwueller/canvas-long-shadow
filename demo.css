@@ -7,6 +7,11 @@ canvas, img {
     display: block;
 }
 
-p, dd {
+p {
     max-width: 500px;
+}
+
+dd {
+    margin-left: 40px;
+    max-width: 460px; /* 500px - margin-left */
 }
