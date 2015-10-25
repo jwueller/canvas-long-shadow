@@ -10,4 +10,4 @@ then
     exit 1
 fi
 
-cp -rf "$1"/* .
+cp -rfv "$1"/* .
