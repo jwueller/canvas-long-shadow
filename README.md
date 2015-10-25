@@ -54,7 +54,7 @@ Renders a shadow using the provided context.
     - `fillStyle` {String | CanvasGradient | CanvasPattern | Function} <br/>
       A standard `CanvasRenderingContext2D#fillStyle` value or a function doing the fill. If it is a function, it will receive a `CanvasRenderingContext2D` and the shadow angle (in radians) as arguments.
     - `offsetX` {Number} default = `0` <br/>
-      Moves the shadow boundaries (specified by `Renderer#getWidth()` and `Renderer#getHeight()`) by the specified amount on the local X-axis. By default, the boundaries are centered around the current transformation.
+      Moves the shadow boundaries (specified by `Renderer#width` and `Renderer#height`) by the specified amount on the local X-axis. By default, the boundaries are centered around the current transformation.
     - `offsetY` {Number} default = `0` <br/>
       Like `offsetX`, but for the local Y-axis.
 
