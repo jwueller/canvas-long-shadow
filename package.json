@@ -13,7 +13,6 @@
   "scripts": {
     "preversion": "gulp clean-all",
     "postversion": "gulp build-all",
-    "publish-gh-pages": "gulp gh-pages && git subtree push --prefix dist/gh-pages origin gh-pages",
     "gh-pages-server": "gulp gh-pages && node gh-pages-server.js"
   },
   "dependencies": {
