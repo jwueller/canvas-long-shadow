@@ -24,7 +24,7 @@ npm install --save canvas-long-shadow
 ```javascript
 var CanvasLongShadow = require('canvas-long-shadow'); // not needed in the browser
 var renderer = new CanvasLongShadow.Renderer(width, height);
-renderer.render(ctx, {angleDeg: 30}); // renders onto an existing canvas
+renderer.render(ctx, {angleDeg: 30, /* … */}); // renders onto an existing canvas
 ```
 
 ## `new Renderer(width, height[, options])`
