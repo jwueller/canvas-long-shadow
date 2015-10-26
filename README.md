@@ -1,6 +1,6 @@
 # HTML5 Canvas Parallel Long Shadow Renderer
 
-This is a library capable of rendering long shadows, often used in flat design, using a HTML5 Canvas. It runs in modern browsers and Node.js.
+This is a library capable of rendering long shadows, often used in material/flat design, using a HTML5 Canvas. It runs in modern browsers and Node.js.
 
 **[Live Demos](http://jwueller.github.io/canvas-long-shadow/)**
 
@@ -24,8 +24,7 @@ npm install --save canvas-long-shadow
 ```javascript
 var CanvasLongShadow = require('canvas-long-shadow'); // not needed in the browser
 var renderer = new CanvasLongShadow.Renderer(width, height);
-renderer.render(ctx, {angleDeg: 30}); // Renders onto an existing canvas...
-var image = renderer.renderImage();   // ...or directly into an image.
+renderer.render(ctx, {angleDeg: 30}); // renders onto an existing canvas
 ```
 
 ## `new Renderer(width, height[, options])`
