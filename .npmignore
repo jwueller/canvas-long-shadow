@@ -4,3 +4,4 @@ dist/
 .gitignore
 gh-pages-server.js
 gulpfile.js
+Thumbs.db
