@@ -1,0 +1,17 @@
+body {
+    font-family: sans-serif;
+    margin: 10px;
+}
+
+canvas, img {
+    display: block;
+}
+
+p {
+    max-width: 500px;
+}
+
+dd {
+    margin-left: 40px;
+    max-width: 460px; /* 500px - margin-left */
+}
