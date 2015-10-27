@@ -92,3 +92,4 @@ node_modules
 
 ### Custom Ignores ###
 dist/
+examples-node/*-out.png

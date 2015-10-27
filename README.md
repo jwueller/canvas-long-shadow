@@ -19,6 +19,8 @@ This is a library capable of rendering long shadows, often used in material/flat
 npm install --save canvas-long-shadow
 ```
 
+_Note: Installing this package will try to compile a native extension. Please consult the [`node-canvas` instructions](https://www.npmjs.com/package/canvas) for further information._
+
 # API
 
 ```javascript
@@ -77,3 +79,7 @@ _Note: The shadow can only be rendered properly if the shape stays inside the sp
 1. clone the sources
 2. `npm install` to pull the development dependencies
 3. `gulp build` to build and package the distribution (excludes `gh-pages`)
+
+# Known Issues
+
+The Node.js dependency `node-canvas` [currently has issues](https://github.com/Automattic/node-canvas/issues/487) with multiple `require()` calls from different modules. Please use the exposed `CanvasLongShadow#Canvas` reference in the meantime.

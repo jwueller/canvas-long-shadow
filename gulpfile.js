@@ -52,7 +52,7 @@ gulp.task('browser-prod', function () {
 gulp.task('build', ['clean', 'browser-dev', 'browser-prod'], function () {
     return gulp.src([
             'dist/**',
-            'demo/**',
+            'examples-browser/**',
             'README.md'
         ], {base: '.'})
         .pipe(zip('canvas-long-shadow-v' + meta.version + '.zip'))
@@ -70,7 +70,7 @@ gulp.task('clean-gh-pages', function () {
 gulp.task('gh-pages', ['clean-gh-pages', 'browser-prod'], function () {
     return gulp.src([
             'dist/*.min.js',
-            'demo-src/*'
+            'examples-browser/*'
         ])
         .pipe(gulp.dest('dist/gh-pages/'));
 });

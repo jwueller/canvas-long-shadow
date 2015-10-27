@@ -1,4 +1,5 @@
-demo-src/
+examples-browser/
+examples-node/*.png
 dist/
 .gitignore
 gh-pages-server.js
