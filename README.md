@@ -4,7 +4,7 @@ This is a library capable of rendering long shadows, often used in material/flat
 
 **[Live Demos](http://jwueller.github.io/canvas-long-shadow/)**
 
-![Reference Image](demo-src/fancy-reference.png)
+![Reference Image](examples-browser/fancy-reference.png)
 
 # Installation
 
