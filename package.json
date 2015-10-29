@@ -2,7 +2,7 @@
   "name": "canvas-long-shadow",
   "description": "HTML5 Canvas parallel long shadow renderer",
   "author": "Johannes Wüller <johanneswueller@gmail.com>",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "MIT",
   "keywords": [
     "canvas",
