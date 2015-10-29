@@ -32,7 +32,7 @@
 
             // SHADOW: angled pattern
             shapeShadowRenderer.render(ctx, {
-                angleDeg: 45,
+                angleDeg: -45,
                 shapeRenderer: drawSymbolBackground,
 
                 fillStyle: function (fillCtx, angleRad) {
@@ -43,7 +43,7 @@
 
             // SHADOW: flat
             shapeShadowRenderer.render(ctx, {
-                angleDeg: 160,
+                angleDeg: 200,
                 shapeRenderer: drawSymbolBackground,
                 fillStyle: 'rgba(0, 0, 0, 0.15)'
             });
@@ -59,7 +59,7 @@
 
             // SHADOW: angled gradient #1
             iconShadowRenderer.render(ctx, {
-                angleDeg: 45,
+                angleDeg: -45,
                 shapeRenderer: drawSymbol,
 
                 fillStyle: function (fillCtx, angleRad) {
@@ -73,7 +73,7 @@
 
             // SHADOW: angled gradient #2
             iconShadowRenderer.render(ctx, {
-                angleDeg: 160,
+                angleDeg: 200,
                 shapeRenderer: drawSymbol,
 
                 fillStyle: function (fillCtx, angleRad) {

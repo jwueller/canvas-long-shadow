@@ -10,6 +10,7 @@
         <p>This demo utilizes a reduced shadow quality to achieve (near) real-time performance, while rendering the shadow dynamically. In a real-world scenario, you would probably want to cache most shadows by rendering into an off-screen canvas.</p>
         <p><strong>Point somewhere to move the object.</strong></p>
         <canvas id="canvas" width="500" height="500"></canvas>
+        <p>Shadow Angle: <strong><span id="shadow-angle-deg"></span>°</strong></p>
         <p><em>Note: This demo is not necessarily fully compatible with all supported browsers in order to keep the source concise.</em></p>
 
         <script src="canvas-long-shadow.min.js"></script>
@@ -45,6 +46,7 @@
             };
 
             var canvas = document.getElementById('canvas');
+            var shadowAngleDegIndicator = document.getElementById('shadow-angle-deg');
 
             var idleRotationSpeedDeg = -Math.PI / 128;
             var activeRotationSpeedDeg = -Math.PI / 32;
@@ -83,10 +85,13 @@
                 ctx.fillStyle = '#195A72';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+                var shadowAngleDeg = -((new Date().getTime() / 30) % 360);
+                shadowAngleDegIndicator.innerHTML = (shadowAngleDeg + 360).toFixed(1);
+
                 shadowRenderer.render(ctx, {
                     // Notice that angles can be specified using "angleDeg" and
                     // "angleRad". If both are set, "angleRad" takes precedence.
-                    angleRad: (new Date().getTime() / 1700) % (Math.PI * 2),
+                    angleDeg: shadowAngleDeg,
 
                     offsetX: canvas.width / 2,
                     offsetY: canvas.height / 2,
