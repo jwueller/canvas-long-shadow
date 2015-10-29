@@ -48,7 +48,7 @@ Renders a shadow using the provided context.
       Defines the shape to be shadowed. Receives a `CanvasRenderingContext2D` argument to draw the shape with. Context state changes will not affect the context supplied though the `ctx` parameter.
     - `angleRad` {Number} <br/>
       Shadow angle in radians. If this option is not set, `angleDeg` will be used.
-    - `angleDeg` {Number} default = `45` <br/>
+    - `angleDeg` {Number} default = `-45` <br/>
       Shadow angle in degrees. Will only be used if `angleRad` is not set.
     - `throwDistance` {Number} default = `Infinity` <br/>
       How far the shadow should be thrown along the specified angle, in pixels.
