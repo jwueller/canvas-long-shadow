@@ -104,7 +104,7 @@ function Renderer(renderWidth, renderHeight, rendererOptions) {
 
         if (!hasUserAngleRad) {
             // We default to the most common angle.
-            if (!hasUserAngleDeg) angleDeg = 45;
+            if (!hasUserAngleDeg) angleDeg = -45;
             angleRad = (Math.PI / 180) * angleDeg;
         }
 
@@ -200,7 +200,7 @@ function renderShadowMask(ctx, rasterizedShape, angleRad, throwDistance) {
     ctx.globalCompositeOperation = 'source-over';
 
     var strideX = Math.cos(angleRad);
-    var strideY = Math.sin(angleRad);
+    var strideY = -Math.sin(angleRad);
     var iteration;
     var left;
     var top;
