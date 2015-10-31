@@ -82,4 +82,7 @@ _Note: The shadow can only be rendered properly if the shape stays inside the sp
 
 # Known Issues
 
-The Node.js dependency `node-canvas` [currently has issues](https://github.com/Automattic/node-canvas/issues/487) with multiple `require()` calls from different modules. Please use the exposed `CanvasLongShadow#Canvas` reference in the meantime.
+The Node.js canvas implementation `node-canvas` [currently has issues](https://github.com/Automattic/node-canvas/issues/487) with multiple `require()` calls from different modules. You will get a `TypeError: Image or Canvas expected` inside the library. Please use the exposed `CanvasLongShadow#Canvas` reference in the meantime when interacting with `canvas-long-shadow`:
+
+    var canvas = new CanvasLongShadow.Canvas(width, height);
+    var ctx = canvas.getContext('2d');
