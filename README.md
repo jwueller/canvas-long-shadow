@@ -29,6 +29,15 @@ var renderer = new CanvasLongShadow.Renderer(width, height);
 renderer.render(ctx, {angleDeg: 30, /* … */}); // renders onto an existing canvas
 ```
 
+Or provide your own instance of Canvas (See note below on why you may need to provide your own)
+
+```javascript
+var Canvas = require('node-canvas');
+var CanvasLongShadow = require('canvas-long-shadow')(Canvas);
+var renderer = new CanvasLongShadow.Renderer(width, height);
+renderer.render(ctx, {angleDeg: 30, /* … */}); // renders onto an existing canvas
+```
+
 ## `new Renderer(width, height[, options])`
 
 * `width` {Number}

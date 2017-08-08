@@ -1,9 +1,14 @@
 'use strict';
 
-module.exports = {
-    Renderer: require('./src/renderer'),
+var renderer = require('./src/renderer');
+var canvas = require('canvas-browserify');
 
-    // FIXME: Workaround for upstream bug:
-    // https://github.com/Automattic/node-canvas/issues/487
-    Canvas: require('canvas-browserify')
-};
+var factory = function (canvasInstance) {
+    return renderer(canvasInstance);
+}
+
+var _default = renderer(canvas);
+factory.Renderer = _default.Renderer;
+factory.Canvas = _default.Canvas;
+
+module.exports = factory;

@@ -1,4 +1,5 @@
-var CanvasLongShadow = require('..');
+var Canvas = require('canvas-browserify');
+var CanvasLongShadow = require('..')(Canvas);
 var canvas = new CanvasLongShadow.Canvas(500, 500);
 var ctx = canvas.getContext('2d');
 
